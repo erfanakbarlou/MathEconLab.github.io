@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#090d18" />
+<title>MathLab — Interactive Mathematical Economics</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+:root{--bg:#090d18;--panel:#111827;--panel2:#151f31;--line:#253249;--muted:#91a0b8;--text:#edf3ff;--accent:#8b7cff;--cyan:#55d6e8;--green:#66d9ad;--shadow:0 18px 55px #0005}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -10%,#25204a 0,transparent 35%),var(--bg);color:var(--text);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+button,select,input{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:grid;grid-template-columns:248px 1fr}
+.sidebar{background:#0b1120cc;border-right:1px solid var(--line);padding:25px 17px;display:flex;flex-direction:column;gap:28px}
+.brand{display:flex;align-items:center;gap:11px;padding:2px 8px}.brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#8c7cff,#4ccfe0);display:grid;place-items:center;color:#07101b;font-weight:900;font-size:20px;box-shadow:0 8px 24px #7668ff55}.brand strong{font-size:17px;letter-spacing:.2px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.5px;text-transform:uppercase}
+.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#687994;padding:0 10px;margin-bottom:8px}.nav-item{width:100%;display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid transparent;background:transparent;color:#aab7cc;border-radius:10px;text-align:left;margin:3px 0}.nav-item.active{background:linear-gradient(100deg,#7164db28,#4acde20d);border-color:#7164db55;color:white}.nav-icon{width:20px;text-align:center;font-size:16px}.side-note{margin-top:auto;border:1px solid var(--line);background:#111a2b;border-radius:13px;padding:14px;color:var(--muted);font-size:12px}.side-note b{display:block;color:#e3eaff;margin-bottom:5px}
+main{min-width:0;padding:28px clamp(18px,3vw,44px) 50px;max-width:1800px;width:100%;margin:auto}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:27px}.eyebrow{color:var(--cyan);font-size:11px;text-transform:uppercase;letter-spacing:1.8px;font-weight:700}.topbar h1{font-size:clamp(25px,3vw,34px);line-height:1.15;margin:6px 0 8px;letter-spacing:-1px}.subtitle{color:var(--muted);margin:0}.top-actions{display:flex;gap:9px}.ghost,.primary{border:1px solid var(--line);border-radius:10px;padding:9px 13px;background:#111a2b;color:#dce6fa}.primary{background:linear-gradient(120deg,#8070ef,#4a9fca);border:0;color:white;font-weight:700}
+.layout{display:grid;grid-template-columns:minmax(260px,315px) minmax(0,1fr);gap:18px;align-items:start}.panel,.chart-card,.metric{background:linear-gradient(145deg,#141e30,#101827);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}.panel{padding:19px;position:sticky;top:18px}.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}.section-head h2,.chart-head h2{font-size:14px;margin:0;font-weight:700}.tag{font-size:10px;color:var(--green);background:#66d9ad17;border:1px solid #66d9ad35;padding:4px 8px;border-radius:20px}
+.field{margin:15px 0}.field label{display:flex;justify-content:space-between;gap:10px;color:#c8d3e7;font-size:12px;margin-bottom:8px}.value{color:var(--cyan);font-variant-numeric:tabular-nums;font-weight:700}.select{width:100%;background:#0b1322;color:#edf3ff;border:1px solid #30405b;border-radius:9px;padding:11px;outline:none}.range{width:100%;accent-color:#8b7cff}.hint{font-size:11px;color:#7889a4;margin-top:5px}.divider{height:1px;background:var(--line);margin:18px 0}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field-grid .field{margin:9px 0}.field-grid input[type=number]{width:100%;background:#0b1322;border:1px solid #30405b;border-radius:8px;padding:8px;color:var(--text)}
+.content{min-width:0}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:15px}.metric{padding:13px 15px}.metric span{display:block;color:var(--muted);font-size:11px}.metric strong{display:block;font-size:19px;margin-top:4px;font-variant-numeric:tabular-nums}
+.chart-card{padding:17px;margin-bottom:15px;min-width:0}.chart-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}.chart-head p{margin:4px 0 0;color:var(--muted);font-size:11px}.chart-badge{font-size:10px;color:#b8b0ff;background:#8b7cff19;border:1px solid #8b7cff44;padding:4px 8px;border-radius:20px;white-space:nowrap}
+.charts{display:grid;grid-template-columns:1.15fr .85fr;gap:15px}.plot{height:420px;width:100%}.plot.small{height:390px}
+.formula{background:#0b1423;border:1px solid #273851;border-radius:12px;padding:16px 18px;margin-bottom:15px;overflow:auto}.formula-head{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1.4px;margin-bottom:8px}.equation{font-size:18px;color:#e9e8ff;min-height:30px}.footnote{font-size:11px;color:#8595ae;margin-top:10px}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:12px}.info-card{padding:15px 17px;border:1px solid var(--line);border-radius:13px;background:#101827}.info-card h3{font-size:12px;margin:0 0 7px}.info-card p{font-size:12px;color:var(--muted);margin:0}
+
+.analysis-panel{background:linear-gradient(145deg,#141e30,#101827);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:15px;box-shadow:var(--shadow)}
+.analysis-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px}
+.analysis-top h2{font-size:14px;margin:0}.analysis-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.matrix-card{background:#0b1423;border:1px solid #273851;border-radius:12px;padding:13px;min-width:0}
+.matrix-card h3{font-size:12px;margin:0 0 8px;color:#dce6fa}.matrix{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:5px 0}
+.matrix-bracket{font-family:Georgia,serif;font-size:38px;color:#8b7cff;line-height:1}
+.matrix-values{display:grid;gap:5px;text-align:center;font-variant-numeric:tabular-nums;color:#d8e5f8;font-size:12px;white-space:nowrap}
+.matrix-values span{background:#18243a;padding:5px 8px;border-radius:5px;min-width:65px}
+.classification{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+.class-item{padding:11px 12px;border-radius:10px;background:#0b1423;border:1px solid #273851}
+.class-item span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px}
+.class-item b{display:block;margin-top:4px;font-size:13px;color:#dfe8f8}
+.class-item b.good{color:#66d9ad}.class-item b.warn{color:#f4c779}.class-item b.bad{color:#ff9292}
+.analysis-note{font-size:11px;color:#8595ae;line-height:1.6;margin:12px 2px 0}
+@media(max-width:760px){.analysis-grid,.classification{grid-template-columns:1fr}}
+.hidden{display:none!important}.mobile-menu{display:none}
+@media(max-width:1050px){.layout{grid-template-columns:270px minmax(0,1fr)}.charts{grid-template-columns:1fr}.plot,.plot.small{height:390px}}
+@media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{display:none}.mobile-menu{display:inline-flex}.layout{grid-template-columns:1fr}.panel{position:static}.topbar{align-items:flex-start}.top-actions .ghost{display:none}.metrics{grid-template-columns:1fr 1fr}.metrics .metric:last-child{grid-column:span 2}.plot,.plot.small{height:340px}main{padding:20px 14px 35px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-mark">∑</div><div><strong>MathLab</strong><small>Economics in motion</small></div></div>
+  <div><div class="nav-label">Workspace</div>
+    <button class="nav-item active"><span class="nav-icon">◈</span> Function Explorer</button>
+    <button class="nav-item" id="navLevels"><span class="nav-icon">⌁</span> Level Sets</button>
+    <button class="nav-item" id="navAbout"><span class="nav-icon">ⓘ</span> About this lab</button>
+  </div>
+  <div class="side-note"><b>Interactive Mathematical Economics</b>Explore how changing a function's parameters transforms its surface and level curves.<br><br><span style="color:#71839e">VERSION 1.0 · BROWSER BASED</span></div>
+</aside>
+<main>
+  <header class="topbar">
+    <div><div class="eyebrow">Mathematical economics / Visualization studio</div><h1>Function Explorer</h1><p class="subtitle">Explore multivariable functions through interactive 3D surfaces and level sets.</p></div>
+    <div class="top-actions"><button class="ghost" id="reset">↺ Reset</button><button class="primary" id="export">↓ Export chart</button></div>
+  </header>
+  <div class="layout">
+    <section class="panel">
+      <div class="section-head"><h2>Function settings</h2><span class="tag">LIVE MODEL</span></div>
+      <div class="field"><label for="kind">Function family</label><select class="select" id="kind">
+        <option value="cd">Cobb–Douglas</option><option value="ces">CES</option><option value="subs">Perfect Substitutes</option><option value="comp">Perfect Complements</option><option value="quad">Quadratic</option>
+      </select></div>
+      <div class="divider"></div>
+      <div class="section-head"><h2>Parameters</h2><span class="chart-badge" id="paramCount">3 PARAMETERS</span></div>
+      <div id="params"></div>
+      <div class="divider"></div>
+      <div class="section-head"><h2>Domain & point</h2></div>
+      <div class="field"><label>Maximum x <span class="value" id="xmaxVal">10</span></label><input class="range" id="xmax" type="range" min="3" max="20" step="1" value="10"></div>
+      <div class="field"><label>Maximum y <span class="value" id="ymaxVal">10</span></label><input class="range" id="ymax" type="range" min="3" max="20" step="1" value="10"></div>
+      <div class="field-grid">
+        <div class="field"><label>x₀ <span class="value" id="x0Val">4</span></label><input class="range" id="x0" type="range" min=".2" max="10" step=".2" value="4"></div>
+        <div class="field"><label>y₀ <span class="value" id="y0Val">4</span></label><input class="range" id="y0" type="range" min=".2" max="10" step=".2" value="4"></div>
+      </div>
+      <div class="field"><label>Number of level curves <span class="value" id="levelsVal">8</span></label><input class="range" id="levels" type="range" min="3" max="15" step="1" value="8"></div>
+      <p class="hint">All plots update automatically when a setting changes.</p>
+    </section>
+    <section class="content">
+      <div class="metrics">
+        <div class="metric"><span>Selected point</span><strong id="pointMetric">(4.0, 4.0)</strong></div>
+        <div class="metric"><span>Function value · f(x₀, y₀)</span><strong id="zMetric">4.000</strong></div>
+        <div class="metric"><span>Regularity</span><strong id="smoothMetric" style="font-size:16px">Smooth</strong></div>
+      </div>
+      <div class="formula"><div class="formula-head">Current mathematical expression</div><div class="equation" id="formula">\\(f(x,y)=A x^{\\alpha}y^{\\beta}\\)</div><div class="footnote" id="formulaNote">A multiplicative production or utility function with positive inputs.</div></div>
+      <div class="charts">
+        <div class="chart-card"><div class="chart-head"><div><h2>3D Function Surface</h2><p>Drag to rotate · Scroll to zoom · Hover for coordinates</p></div><span class="chart-badge">SURFACE</span></div><div id="surface" class="plot"></div></div>
+        <div class="chart-card"><div class="chart-head"><div><h2>Level Sets</h2><p>Contours show combinations with equal function values</p></div><span class="chart-badge">CONTOUR</span></div><div id="contour" class="plot small"></div></div>
+      </div>
+      <div class="info">
+        <div class="info-card"><h3>How to read the surface</h3><p>The vertical axis represents the function value. The highlighted marker identifies the selected input bundle (x₀, y₀).</p></div>
+        <div class="info-card"><h3>How to read level sets</h3><p>Each contour connects input combinations that produce the same value of f(x, y). Move the selected point to inspect its function value.</p></div>
+      </div>
+      <section class="analysis-panel" id="analysis">
+        <div class="analysis-top"><h2>Differential & curvature analysis</h2><span class="chart-badge">SYMBOLIC STRUCTURE · NUMERICAL EVALUATION</span></div>
+        <div class="analysis-grid">
+          <div class="matrix-card"><h3>Jacobian · ∇f(x₀, y₀)</h3><div id="jacobian" class="matrix"></div></div>
+          <div class="matrix-card"><h3>Hessian · Hf(x₀, y₀)</h3><div id="hessian" class="matrix"></div></div>
+          <div class="matrix-card"><h3>Bordered Hessian · B(x₀, y₀)</h3><div id="bordered" class="matrix"></div></div>
+          <div class="matrix-card"><h3>Local diagnostic</h3><div id="diagnostic" style="color:#aebbd0;font-size:12px;line-height:1.7">Evaluating derivatives…</div></div>
+        </div>
+        <div class="classification">
+          <div class="class-item"><span>Convexity on displayed domain</span><b id="convexity">—</b></div>
+          <div class="class-item"><span>Concavity on displayed domain</span><b id="concavity">—</b></div>
+          <div class="class-item"><span>Quasi-convexity diagnostic</span><b id="quasiconvex">—</b></div>
+          <div class="class-item"><span>Quasi-concavity diagnostic</span><b id="quasiconcave">—</b></div>
+        </div>
+        <p class="analysis-note" id="analysisNote">Classification is assessed numerically over the displayed positive-input domain. It is a diagnostic, not a formal proof over the entire mathematical domain. For non-smooth functions, classical derivatives do not exist on the kink set.</p>
+      </section>
+    </section>
+  </div>
+</main>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const defaults = {
+ cd:{A:1,alpha:.5,beta:.5}, ces:{A:1,delta:.5,rho:-.5}, subs:{a:2,b:3},
+ comp:{a:2,b:3}, quad:{c0:0,c1:1,c2:1,c3:-.1,c4:-.1,c5:0}
+};
+let p = structuredClone(defaults.cd);
+const specs = {
+ cd:[['A','Scale factor A',.2,3,.1],['alpha','Output elasticity α',.1,2,.05],['beta','Output elasticity β',.1,2,.05]],
+ ces:[['A','Scale factor A',.2,3,.1],['delta','Distribution parameter δ',.05,.95,.05],['rho','Substitution parameter ρ',-2,2,.1]],
+ subs:[['a','Weight a',.2,5,.1],['b','Weight b',.2,5,.1]],
+ comp:[['a','Weight a',.2,5,.1],['b','Weight b',.2,5,.1]],
+ quad:[['c0','Constant c₀',-5,5,.5],['c1','Linear x · c₁',-3,3,.2],['c2','Linear y · c₂',-3,3,.2],['c3','Squared x · c₃',-1,1,.05],['c4','Squared y · c₄',-1,1,.05],['c5','Cross term · c₅',-1,1,.05]]
+};
+const fmt = n => Number(n).toFixed(2).replace(/\.00$/,'');
+function renderParams(){
+ const kind=$('kind').value; p=structuredClone(defaults[kind]); $('params').innerHTML='';
+ $('paramCount').textContent=specs[kind].length+' PARAMETERS';
+ specs[kind].forEach(([key,label,min,max,step])=>{
+  const wrap=document.createElement('div');wrap.className='field';
+  wrap.innerHTML=`<label>${label}<span class="value" id="v_${key}">${fmt(p[key])}</span></label><input class="range" id="p_${key}" type="range" min="${min}" max="${max}" step="${step}" value="${p[key]}">`;
+  $('params').appendChild(wrap);
+  $('p_'+key).addEventListener('input',e=>{p[key]=Number(e.target.value);$('v_'+key).textContent=fmt(p[key]);update()});
+ });
+ update();
+}
+function f(x,y){
+ switch($('kind').value){
+  case 'cd':return p.A*Math.pow(x,p.alpha)*Math.pow(y,p.beta);
+  case 'ces':return Math.abs(p.rho)<1e-5?p.A*Math.pow(x,p.delta)*Math.pow(y,1-p.delta):p.A*Math.pow(p.delta*Math.pow(x,p.rho)+(1-p.delta)*Math.pow(y,p.rho),1/p.rho);
+  case 'subs':return p.a*x+p.b*y;
+  case 'comp':return Math.min(p.a*x,p.b*y);
+  case 'quad':return p.c0+p.c1*x+p.c2*y+p.c3*x*x+p.c4*y*y+p.c5*x*y;
+ }
+}
+function expression(){
+ switch($('kind').value){
+ case 'cd':return `\\\\(f(x,y)=${fmt(p.A)}x^{${fmt(p.alpha)}}y^{${fmt(p.beta)}}\\\\)`;
+ case 'ces':return Math.abs(p.rho)<1e-5?`\\\\(f(x,y)=${fmt(p.A)}x^{${fmt(p.delta)}}y^{${fmt(1-p.delta)}}\\\\)`:`\\\\(f(x,y)=${fmt(p.A)}\\\\left(${fmt(p.delta)}x^{${fmt(p.rho)}}+${fmt(1-p.delta)}y^{${fmt(p.rho)}}\\\\right)^{${fmt(1/p.rho)}}\\\\)`;
+ case 'subs':return `\\\\(f(x,y)=${fmt(p.a)}x+${fmt(p.b)}y\\\\)`;
+ case 'comp':return `\\\\(f(x,y)=\\\\min\\\\left(${fmt(p.a)}x,${fmt(p.b)}y\\\\right)\\\\)`;
+ case 'quad':return `\\\\(f(x,y)=${fmt(p.c0)}+${fmt(p.c1)}x+${fmt(p.c2)}y+${fmt(p.c3)}x^2+${fmt(p.c4)}y^2+${fmt(p.c5)}xy\\\\)`;
+ }
+}
+
+function derivativeData(x,y,xmax,ymax){
+ const h=Math.max(1e-4,Math.min(xmax,ymax)*1e-4);
+ const f0=f(x,y), xp=f(x+h,y), xm=f(Math.max(1e-6,x-h),y), yp=f(x,y+h), ym=f(x,Math.max(1e-6,y-h));
+ const hx=(x>h? h: h/2), hy=(y>h?h:h/2);
+ const fx=(f(x+hx,y)-f(x-hx,y))/(2*hx), fy=(f(x,y+hy)-f(x,y-hy))/(2*hy);
+ const fxx=(f(x+hx,y)-2*f0+f(x-hx,y))/(hx*hx);
+ const fyy=(f(x,y+hy)-2*f0+f(x,y-hy))/(hy*hy);
+ const fxy=(f(x+hx,y+hy)-f(x+hx,y-hy)-f(x-hx,y+hy)+f(x-hx,y-hy))/(4*hx*hy);
+ return {fx,fy,fxx,fxy,fyy};
+}
+function matrixHTML(rows){
+ return `<span class="matrix-bracket">[</span><div class="matrix-values">${rows.map(row=>`<div>${row.map(v=>`<span>${Number.isFinite(v)?v.toFixed(4):'—'}</span>`).join('')}</div>`).join('')}</div><span class="matrix-bracket">]</span>`;
+}
+function classifyAnalysis(x0,y0,xmax,ymax){
+ const kind=$('kind').value, isKink=kind==='comp' && Math.abs(p.a*x0-p.b*y0)<1e-3;
+ if(kind==='comp' && isKink){
+  ['jacobian','hessian','bordered'].forEach(id=>$(id).innerHTML='<span style="color:#f4c779;font-size:12px">Not defined on the kink set</span>');
+  $('diagnostic').textContent='The selected point lies on a·x = b·y. The minimum function is not differentiable here, so its classical Jacobian and Hessian do not exist.';
+ } else {
+  const d=derivativeData(x0,y0,xmax,ymax), {fx,fy,fxx,fxy,fyy}=d;
+  $('jacobian').innerHTML=matrixHTML([[fx,fy]]);
+  $('hessian').innerHTML=matrixHTML([[fxx,fxy],[fxy,fyy]]);
+  const bh=[[0,fx,fy],[fx,fxx,fxy],[fy,fxy,fyy]];
+  $('bordered').innerHTML=matrixHTML(bh);
+  const detB= -fx*fx*fyy + 2*fx*fy*fxy - fy*fy*fxx;
+  $('diagnostic').innerHTML=`<b>det(H):</b> ${(fxx*fyy-fxy*fxy).toFixed(5)}<br><b>det(B):</b> ${detB.toFixed(5)}<br><b>‖∇f‖:</b> ${Math.hypot(fx,fy).toFixed(5)}<br><span style="color:#8595ae">Matrices evaluated at the selected point.</span>`;
+ }
+ // Domain-wide numerical scan of Hessian and bordered-Hessian signs
+ let hPos=true,hNeg=true,qc=true,qv=true, samples=0, skipped=0;
+ const eps=1e-3, nx=13,ny=13;
+ for(let i=0;i<nx;i++)for(let j=0;j<ny;j++){
+  const x=.05+(xmax-.05)*i/(nx-1), y=.05+(ymax-.05)*j/(ny-1);
+  if(kind==='comp' && Math.abs(p.a*x-p.b*y)<.02){skipped++;continue}
+  const d=derivativeData(x,y,xmax,ymax), detH=d.fxx*d.fyy-d.fxy*d.fxy;
+  if(![d.fx,d.fy,d.fxx,d.fxy,d.fyy,detH].every(Number.isFinite))continue;
+  // Eigenvalue signs of symmetric 2x2 Hessian, allowing small numerical tolerance.
+  const tr=d.fxx+d.fyy, disc=Math.sqrt(Math.max(0,(d.fxx-d.fyy)**2+4*d.fxy*d.fxy));
+  const e1=(tr+disc)/2,e2=(tr-disc)/2;
+  if(e1 < -eps || e2 < -eps) hPos=false;
+  if(e1 > eps || e2 > eps) hNeg=false;
+  const grad2=d.fx*d.fx+d.fy*d.fy;
+  if(grad2>1e-7){
+   const db=-d.fx*d.fx*d.fyy+2*d.fx*d.fy*d.fxy-d.fy*d.fy*d.fxx;
+   if(db < -eps) qc=false; // quasi-concavity: bordered determinant >= 0
+   if(db > eps) qv=false;  // quasi-convexity: bordered determinant <= 0
+  }
+  samples++;
+ }
+ function put(id,yes,no,uncertain=false){
+  const el=$(id);el.textContent=uncertain?'Inconclusive':yes;el.className=yes===no?'':(yes==='Yes'?'good':yes==='No'?'bad':'warn');
+ }
+ const isComp=kind==='comp';
+ put('convexity',hPos?'Yes':'No');
+ put('concavity',hNeg?'Yes':'No');
+ put('quasiconvex',qv?'Consistent':'Not supported');
+ put('quasiconcave',qc?'Consistent':'Not supported');
+ ['convexity','concavity','quasiconvex','quasiconcave'].forEach(id=>{$(id).className=($(id).textContent==='Yes'||$(id).textContent==='Consistent')?'good':($(id).textContent==='No'||$(id).textContent==='Not supported')?'bad':'warn'});
+ $('analysisNote').textContent=`Numerical sign scan: ${samples} grid points over x ∈ (0, ${xmax}] and y ∈ (0, ${ymax}]. ${skipped?skipped+' points near the non-smooth kink were excluded. ':''}“Consistent” means the relevant bordered-Hessian sign condition held on the sampled grid; this is not a global mathematical proof. For a formal classification, inspect the function's full domain and assumptions.`;
+}
+
+function update(){
+ const xmax=+$('xmax').value,ymax=+$('ymax').value,x0=Math.min(+$('x0').value,xmax),y0=Math.min(+$('y0').value,ymax),n=+$('levels').value;
+ $('x0').max=xmax;$('y0').max=ymax;
+ $('xmaxVal').textContent=xmax;$('ymaxVal').textContent=ymax;$('x0Val').textContent=fmt(x0);$('y0Val').textContent=fmt(y0);$('levelsVal').textContent=n;
+ $('x0').value=x0;$('y0').value=y0;
+ const z0=f(x0,y0),kind=$('kind').value, nonsmooth=kind==='comp';
+ $('pointMetric').textContent=`(${fmt(x0)}, ${fmt(y0)})`;$('zMetric').textContent=Number.isFinite(z0)?z0.toFixed(3):'—';$('smoothMetric').textContent=nonsmooth?'Non-smooth':'Smooth';
+ $('formula').innerHTML=expression();$('formulaNote').textContent=kind==='comp'?'The minimum operator creates a kink along the break line; derivatives are not defined on that line.':kind==='quad'?'A general quadratic function; its curvature depends on the selected coefficients.':kind==='ces'?'The CES form approaches Cobb–Douglas as ρ approaches zero.':'The function is evaluated over positive input values.';
+ if(window.MathJax) MathJax.typesetPromise([$ ('formula')]);
+ const steps=55,xs=Array.from({length:steps},(_,i)=>.03+(xmax-.03)*i/(steps-1)),ys=Array.from({length:steps},(_,i)=>.03+(ymax-.03)*i/(steps-1));
+ const z=ys.map(y=>xs.map(x=>{let v=f(x,y);return Number.isFinite(v)&&Math.abs(v)<1e8?v:null}));
+ const palette='Viridis';
+ const surfaceData=[{type:'surface',x:xs,y:ys,z,colorscale:palette,showscale:false,opacity:.96,hovertemplate:'x: %{x:.2f}<br>y: %{y:.2f}<br>f: %{z:.3f}<extra></extra>'},
+ {type:'scatter3d',x:[x0],y:[y0],z:[z0],mode:'markers+text',text:['Selected point'],textposition:'top center',marker:{size:5,color:'#ff8b8b',line:{color:'#fff',width:1}},name:'Selected point'}];
+ const layoutBase={paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#aebbd0',family:'Inter, sans-serif',size:11},margin:{l:0,r:0,t:10,b:0},showlegend:false};
+ Plotly.react('surface',surfaceData,{...layoutBase,height:420,scene:{bgcolor:'rgba(0,0,0,0)',xaxis:{title:'x',gridcolor:'#29364b',zerolinecolor:'#52617a'},yaxis:{title:'y',gridcolor:'#29364b',zerolinecolor:'#52617a'},zaxis:{title:'f(x,y)',gridcolor:'#29364b',zerolinecolor:'#52617a'},camera:{eye:{x:1.55,y:1.55,z:1.05}}}},{responsive:true,displaylogo:false});
+ const vals=z.flat().filter(v=>v!==null&&Number.isFinite(v)).sort((a,b)=>a-b);
+ let lo=vals[Math.floor((vals.length-1)*.05)],hi=vals[Math.floor((vals.length-1)*.95)];if(!Number.isFinite(lo)||!Number.isFinite(hi)||lo===hi){lo=vals[0];hi=vals[vals.length-1]+1e-6}
+ const contour=[{type:'contour',x:xs,y:ys,z,colorscale:'Turbo',ncontours:n,contours:{coloring:'lines',showlabels:true,labelfont:{color:'#dce6f8',size:10}},line:{width:1.5},colorbar:{title:{text:'f(x,y)',font:{color:'#aebbd0'}},tickfont:{color:'#aebbd0'},thickness:10,len:.8},hovertemplate:'x: %{x:.2f}<br>y: %{y:.2f}<br>level: %{z:.3f}<extra></extra>'},
+ {type:'scatter',x:[x0],y:[y0],mode:'markers+text',text:[`(${fmt(x0)}, ${fmt(y0)})`],textposition:'top right',marker:{size:10,color:'#fff',line:{color:'#8b7cff',width:3}},name:'Selected point'}];
+ Plotly.react('contour',contour,{...layoutBase,height:390,xaxis:{title:'x',range:[0,xmax],gridcolor:'#29364b',zerolinecolor:'#52617a'},yaxis:{title:'y',range:[0,ymax],scaleanchor:'x',scaleratio:1,gridcolor:'#29364b',zerolinecolor:'#52617a'}},{responsive:true,displaylogo:false});
+ classifyAnalysis(x0,y0,xmax,ymax);
+}
+$('kind').addEventListener('change',renderParams);
+['xmax','ymax','x0','y0','levels'].forEach(id=>$(id).addEventListener('input',update));
+$('reset').addEventListener('click',()=>{$('kind').value='cd';$('xmax').value=10;$('ymax').value=10;$('x0').value=4;$('y0').value=4;$('levels').value=8;renderParams()});
+$('export').addEventListener('click',()=>Plotly.downloadImage('surface',{format:'png',filename:'mathlab-function-surface',width:1400,height:1000}));
+$('navLevels').addEventListener('click',()=>{$('contour').scrollIntoView({behavior:'smooth',block:'center'})});
+$('navAbout').addEventListener('click',()=>document.getElementById('analysis').scrollIntoView({behavior:'smooth'}));
+renderParams();
+</script>
+</body>
+</html>
